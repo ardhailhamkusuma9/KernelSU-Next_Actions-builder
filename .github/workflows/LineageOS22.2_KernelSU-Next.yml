@@ -1,4 +1,4 @@
-name: Build LineageOS 22.2 Joan/L-01K Kernel with KernelSU-Next
+name: Build LineageOS 22.2 Joan/L-01K Kernel with KernelSU
 
 on:
   workflow_dispatch:
@@ -44,15 +44,15 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel/scripts
         sed -i 's/ -dirty//g' setlocalversion
 
-    - name: Setup KernelSU Next
+    - name: Setup KernelSU
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        rm -rf KernelSU-Next
+        rm -rf KernelSU
         curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s next
-        KSU_VERSION=$(cd KernelSU-Next && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
+        KSU_VERSION=$(cd KernelSU && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
         echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
 
-    - name: Build Joan kernel with KernelSU Next
+    - name: Build Joan kernel with KernelSU
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         export ARCH=arm64
@@ -88,17 +88,17 @@ jobs:
       if: env.CHECK_IMAGE == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: Image-LOS22.2-Joan_KernelSU-Next_${{ env.KSUVER }}
+        name: Image-LOS22.2-Joan_KernelSU_${{ env.KSUVER }}
         path: kernel_workspace/android-kernel/out/arch/arm64/boot/Image
 
     - name: Upload Joan AnyKernel3 zip
       if: env.CHECK_IMAGE == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: AK3-LOS22.2-Joan_KernelSU-Next_${{ env.KSUVER }}-${{ env.BUILD_TIME }}
+        name: AK3-LOS22.2-Joan_KernelSU_${{ env.KSUVER }}-${{ env.BUILD_TIME }}
         path: kernel_workspace/AnyKernel3/*
 
-    - name: Build L-01K kernel with KernelSU Next
+    - name: Build L-01K kernel with KernelSU
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         export ARCH=arm64
@@ -135,12 +135,12 @@ jobs:
       if: env.CHECK_IMAGE_1 == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: Image-LOS22.2-l01k_KernelSU-Next_${{ env.KSUVER }}
+        name: Image-LOS22.2-l01k_KernelSU_${{ env.KSUVER }}
         path: kernel_workspace/android-kernel/out/arch/arm64/boot/Image
 
     - name: Upload L-01K AnyKernel3 zip
       if: env.CHECK_IMAGE_1 == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: AK3-LOS22.2-l01k_KernelSU-Next_${{ env.KSUVER }}-${{ env.BUILD_TIME }}
+        name: AK3-LOS22.2-l01k_KernelSU_${{ env.KSUVER }}-${{ env.BUILD_TIME }}
         path: kernel_workspace/AnyKernel3/*
